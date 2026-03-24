@@ -56,3 +56,8 @@ python manage.py migrate
 python manage.py runserver<br>
 <h3>Open in browser</h3>
 http://127.0.0.1:8000/
+
+<h2>Project Demo Video</h2>
+ 🎥<br>
+
+[![Watch Demo](https://img.shields.io/badge/▶️%20Watch%20Full%20Video-YouTube-red?style=for-the-badge)](https://youtu.be/NTZUaeoIBQ8)
