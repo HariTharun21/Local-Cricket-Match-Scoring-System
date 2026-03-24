@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block hero %}{% endblock %}
+  <h1>Report a problem</h1>
+  <p>If the app crashed or you see unexpected behavior, please tell us where it happened and what you saw.</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div>
+      <label for="id_where_error">Where did you get the error?</label>
+      {{ form.where_error }}
+    </div>
+
+    <div>
+      <label for="id_description">Describe the issue</label>
+      {{ form.description }}
+    </div>
+
+    {{ form.page_url }} {# hidden input #}
+
+    <div>
+      <label for="id_severity">how requeired/important the problem?</label>
+      {{ form.severity }}
+    </div>
+
+
+    <button type="submit">Send report</button>
+  </form>
+
+  <script>
+    // auto-fill page_url with current path + query
+    (function() {
+      var pageUrlInput = document.getElementById("id_page_url");
+      if (pageUrlInput) {
+        pageUrlInput.value = window.location.pathname + window.location.search;
+      }
+    })();
+  </script>
+{% endblock %}

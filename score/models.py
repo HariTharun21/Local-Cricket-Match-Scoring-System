@@ -14,7 +14,7 @@ class Team(models.Model):
 
 class Player(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="players",default=None)  # owner
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, null=False)
     total_runs = models.IntegerField(default=0)
     total_wickets = models.IntegerField(default=0)
     total_matches = models.IntegerField(default=0)
@@ -59,6 +59,7 @@ class PlayerMatchStats(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="player_match_stats",default=None)  # owner
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name="player_stats")
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name="match_stats")
+   
 
     runs = models.IntegerField(default=0)
     balls = models.IntegerField(default=0)

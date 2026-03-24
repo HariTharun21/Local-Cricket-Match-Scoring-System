@@ -1,9 +1,9 @@
+from django.views.generic import TemplateView
 from .views import (
     HomeView, PlayerListView, PlayerCreateView, PlayerUpdateView,
     PlayerDeleteView, TeamListView, TeamCreateView, TeamPlayersView,
     TeamDeleteView, MatchListView, MatchCreateView, MatchDeleteView,
-    TossDecisionView, OverListView,  OverScoreView,BasicOverCreationView
-)
+    TossDecisionView, OverListView,  OverScoreView,BasicOverCreationView,ErrorReportCreateView)
 from django.urls import path
 urlpatterns = [
    
@@ -30,8 +30,10 @@ urlpatterns = [
     path('over_score/<int:match_id>/<int:over_id>/<int:striker_id>/<int:non_striker_id>/<int:bowler_id>/', 
      OverScoreView.as_view(), name='over_score'),
      path('update_ball/<int:match_id>/<int:over_id>/', OverScoreView.as_view(), name='update_ball'),
-   
 
+
+      path("report-error/", ErrorReportCreateView.as_view(), name="report_error"),
+    path("report-sent/", TemplateView.as_view(template_name="report_sent.html"), name="error_report_sent"),
 
 
 ]

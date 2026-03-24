@@ -34,3 +34,19 @@ class MatchForm(forms.ModelForm):
 
 class PlayerSearchForm(forms.Form):
     name = forms.CharField(max_length=30, required=False, label='search by name')
+
+
+
+
+SEVERITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+]
+
+class ErrorReportForm(forms.Form):
+    where_error = forms.CharField(label="Where did you get the error?", max_length=255, required=True)
+    description = forms.CharField(widget=forms.Textarea, label="Describe what happened")
+    page_url = forms.CharField(widget=forms.HiddenInput(), required=False)
+    severity = forms.ChoiceField(choices=SEVERITY_CHOICES, initial="Medium")
+   

@@ -44,6 +44,10 @@
       <li class="nav-item me-2">
         <a class="btn btn-info" href="{% url 'player_list' %}">Players</a>
       </li>
+      <li class="nav-item me-2">
+        <a class="btn btn-secondary" href="{% url 'report_error' %}">Report a Problem</a>
+      </li>
+
       {% if user.is_authenticated %}
         <li class="nav-item ms-3">
           <span class="navbar-text text-light">

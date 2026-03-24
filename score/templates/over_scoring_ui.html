@@ -110,6 +110,32 @@
     <button type="button" class="btn btn-secondary" onclick="closeUndoWicket()">Cancel</button>
 </div>
 
+<h4>Over Details</h4>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Match No</th>
+            <th>Team</th>
+            <th>Over No</th>
+            <th>Summary</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for over in overs %}
+        <tr>
+            <td>{{ over.match_no }}</td>
+            <td>{{ over.bowling_team }}</td>
+            <td>{{ over.over_no }}</td>
+            <td>{{ over.over_summary }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No overs available</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 <script>
     // Initial Stats from Django
@@ -158,7 +184,7 @@
 
     // 🔹 Save ball instantly to Django using fetch
    function saveBallToServer(event, extraData = {}) {
-    fetch(`/update_ball/{{ match.id }}/{{ over.id }}/`, {
+    fetch("{% url 'update_ball' match.id over.id %}", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -175,14 +201,25 @@
     })
     .then(response => response.json())
     .then(data => {
-        console.log("✅ Ball saved:", data);
-        if (data.status === "success" && event === "OVER") {
-            alert("Over submitted successfully!");
-            if (data.new_over_id) {
-            window.location.href = `/over_score/{{ match.id }}/${data.new_over_id}/${strikerStats.player_id}/${nonStrikerStats.player_id}/${data.new_bowler_id}/`;
-        } // optionally refresh for new over
-        }
-    })
+    console.log("✅ Ball saved:", data);
+
+    if (data.status === "success" && event === "OVER") {
+        alert("Over submitted successfully!");
+
+        let tableBody = document.querySelector("table tbody");
+
+        let newRow = `
+        <tr>
+            <td>{{ match.match_number }}</td>
+            <td>${data.team}</td>
+            <td>${data.over_no}</td>
+            <td>${data.over_summary}</td>
+        </tr>
+        `;
+
+        tableBody.insertAdjacentHTML("beforeend", newRow);
+    }
+})
     .catch(err => console.error("Error:", err));
 }
 
@@ -338,6 +375,23 @@ function submitOverData() {
     document.getElementById("new_bowler_pop-up").style.display = "none";
 }
  
+//over details
+
+if (data.status === "success" && event === "OVER") {
+
+    let tableBody = document.querySelector("table tbody");
+
+    let newRow = `
+        <tr>
+            <td>{{ match.match_number }}</td>
+            <td>${document.getElementById("bowler_name").textContent}</td>
+            <td>${data.over_no}</td>
+            <td>${data.over_summary}</td>
+        </tr>
+    `;
+
+    tableBody.innerHTML += newRow;   // ✅ append row
+}
 
 </script>
 

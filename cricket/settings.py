@@ -133,3 +133,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'assets')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SERVICE_NOW_INSTANCE = "https://dev184589.service-now.com"  # your instance URL
+SERVICE_NOW_TABLE = "x_1807573_gully_0_gully_error_report"   # the table name you created
+SERVICE_NOW_USER = "gully_api"                 # api user you created
+SERVICE_NOW_PASS = "Veera@123"

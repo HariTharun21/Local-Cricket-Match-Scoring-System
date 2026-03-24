@@ -331,13 +331,15 @@ class OverScoreView(LoginRequiredMixin,View):
         bowling_team = get_object_or_404(Team, id=bowling_team_id)
 
         bowler_list = bowling_team.players.all()
-        striker = get_object_or_404(Player, id=striker_id)
-        non_striker = get_object_or_404(Player, id=non_striker_id)
+        striker_obj = get_object_or_404(Player, id=striker_id)
+        striker,_ = PlayerMatchStats.objects.get_or_create(player=striker_obj, match=match, user=request.user)
+        non_striker_obj = get_object_or_404(Player, id=non_striker_id)
+        non_striker,_ = PlayerMatchStats.objects.get_or_create(player=non_striker_obj, match=match, user=request.user)
         bowler = get_object_or_404(Player, id=bowler_id)
         request.session["bowler_id"]=bowler_id
 
         if "batter_list" not in request.session:
-            batter_list = batting_team.players.exclude(id__in=[striker.id, non_striker.id])
+            batter_list = batting_team.players.exclude(id__in=[striker_obj.id, non_striker_obj.id])
             request.session['batter_list'] = list(batter_list.values_list("id", flat=True))
             request.session['outed_players'] = []
 
@@ -348,17 +350,19 @@ class OverScoreView(LoginRequiredMixin,View):
         
         over = get_object_or_404(Over, id=over_id)
         total_overs = request.session.get('total_overs')
+        overs = Over.objects.filter(match_no=match).order_by('over_no')
 
         return render(request, 'over_scoring_ui.html', {
             'match': match,
             'total_overs': total_overs,
             'over': over,
+            'overs': overs,
             'striker': striker,
             'non_striker': non_striker,
             'bowler_list': bowler_list,
             'bowler': bowler,
             'remaining_batters': remaining_batters,
-            'outed_players': Player.objects.filter(id__in=outed_players),
+            'outed_players': Player.objects.filter(id__in=outed_players)
         })
 
     def post(self, request, match_id, over_id):
@@ -478,7 +482,10 @@ class OverScoreView(LoginRequiredMixin,View):
         "status": "success",
         "message": "Over submitted successfully",
         "new_over_id": new_over.id,
-        "new_bowler_id": new_bowler.id 
+        "over_summary": over_summary, 
+        "over_no" : over.over_no,
+        "new_bowler_id": new_bowler.id ,
+        "team": str(over.bowling_team)
                  })
 
 
@@ -487,3 +494,47 @@ class OverScoreView(LoginRequiredMixin,View):
         
 
 #now in undo outed player
+# scoreapp/views.py
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from django.contrib import messages
+from .forms import ErrorReportForm
+from .servicenow_client import create_error_record
+
+class ErrorReportCreateView(FormView):
+    template_name = "error_report.html"
+    form_class = ErrorReportForm
+    success_url = reverse_lazy("error_report_sent")  # create a simple success page or redirect back
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.request.user.is_authenticated:
+            initial["user_name"] = self.request.user.username or self.request.user.username
+            initial["user_email"] = self.request.user.email or self.request.user.email
+        # page_url will be set by JS but you can set a default here
+        return initial
+
+    def form_valid(self, form):
+        # Prepare payload matching your ServiceNow fields
+        user = self.request.user
+        payload = {
+            "user_name": user.username if user.is_authenticated else form.cleaned_data.get("user_name") or "Anonymous",
+            "user_email": user.email if user.is_authenticated else None,
+            "where_error": form.cleaned_data["where_error"],
+            "description": form.cleaned_data["description"],
+            "page_url": form.cleaned_data.get("page_url", ""),
+            "severity": form.cleaned_data["severity"],
+           
+        }
+
+        result = create_error_record(payload)
+
+        if result["ok"]:
+            # Optionally get sys_id: result['response']['result']['sys_id']
+            messages.success(self.request, "Thanks — your report was sent to our team.")
+            return super().form_valid(form)
+        else:
+            messages.error(self.request, "Failed to send report. We'll retry automatically. (Error logged)")
+            # Optionally log this error server-side (Django logs)
+            # But do not raise — show friendly message to user and still redirect or render
+            return super().form_valid(form)  # you may also choose to return self.form_invalid(form)
