@@ -41,16 +41,23 @@ Version Control: Git & GitHub
 
 <h2>⚙️ Installation & Setup</h2>
 <h3>Clone the repository</h3>
-git clone https://github.com/your-username/local-match-scoring.git
-cd local-match-scoring
+git clone https://github.com/HariTharun21/Local-Cricket-Match-Scoring-System.git<br>
+
+cd cricket
 <h3>Create virtual environment</h3>
-python -m venv venv
+python -m venv venv<br>
 venv\Scripts\activate   # Windows
 <h3>Install dependencies</h3>
 pip install -r requirements.txt
 <h3>Apply migrations</h3>
+python manage.py makemigrations<br>
 python manage.py migrate
-Run server
-python manage.py runserver
+<h3>Run server</h3>
+python manage.py runserver<br>
 <h3>Open in browser</h3>
 http://127.0.0.1:8000/
+
+<h2>Project Demo Video</h2>
+ 🎥<br>
+
+[![Watch Demo](https://img.shields.io/badge/▶️%20Watch%20Full%20Video-YouTube-red?style=for-the-badge)](https://youtu.be/NTZUaeoIBQ8)
