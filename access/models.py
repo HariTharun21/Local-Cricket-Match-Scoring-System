@@ -1,12 +1,11 @@
 from django.db import models
 
-# access/models.py
+
 from django.contrib.auth.models import User
 from score.models import Match, Player, Team
 
-# -----------------------------
 # Permissions for users
-# -----------------------------
+
 class AccessPermission(models.Model):
     ACCESS_TYPE = (
         ('R', 'Read-only'),
@@ -36,9 +35,9 @@ class AccessPermission(models.Model):
         return f"{self.user.username} -> {self.access_type} access to {self.match or self.player or self.team}"
 
 
-# -----------------------------
+
 # Access requests from users
-# -----------------------------
+
 class AccessRequest(models.Model):
     STATUS = (
         ('P', 'Pending'),

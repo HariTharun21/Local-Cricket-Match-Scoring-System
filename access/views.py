@@ -1,4 +1,4 @@
-# access/views.py
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import HttpResponseForbidden
@@ -21,9 +21,9 @@ def register(request):
     
     return render(request, 'register.html', {'form': form})
 
-# ---------------------------------------
+
 # User requests access to a resource
-# ---------------------------------------
+
 def request_access(request, match_id=None, player_id=None, team_id=None):
     if not request.user.is_authenticated:
         messages.error(request, "You need to login to request access.")
@@ -48,9 +48,9 @@ def request_access(request, match_id=None, player_id=None, team_id=None):
     return redirect('home')
 
 
-# ---------------------------------------
+
 # Main user manages pending requests
-# ---------------------------------------
+
 def manage_requests(request, match_id=None, player_id=None, team_id=None):
     if not request.user.is_authenticated:
         return redirect('login')

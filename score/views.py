@@ -7,6 +7,11 @@ from .models import Player, Team, Match, Over ,PlayerMatchStats
 from .forms import PlayerForm, PlayerSearchForm, TeamForm, MatchForm
 from django.http import JsonResponse, HttpResponse
 import json
+from django.views.generic.edit import FormView
+from django.urls import reverse_lazy
+from django.contrib import messages
+from .forms import ErrorReportForm
+from .servicenow_client import create_error_record
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from access.models import AccessPermission
@@ -357,8 +362,8 @@ class OverScoreView(LoginRequiredMixin,View):
             'total_overs': total_overs,
             'over': over,
             'overs': overs,
-            'striker': striker,
-            'non_striker': non_striker,
+            'striker': striker_obj,
+            'non_striker': non_striker_obj,
             'bowler_list': bowler_list,
             'bowler': bowler,
             'remaining_batters': remaining_batters,
@@ -406,7 +411,7 @@ class OverScoreView(LoginRequiredMixin,View):
            )
 
 
-    # 🟢 Handle scoring events (0–6)
+    #  Handle scoring events (0–6)
         if event in ["0", "1", "2", "3", "4", "6"]:
             
             
@@ -424,7 +429,7 @@ class OverScoreView(LoginRequiredMixin,View):
 
             return JsonResponse({"status": "success", "message": f"{runs} run(s) added"})
 
-    # 🟡 Handle wicket event
+    #  Handle wicket event
         elif event == "W":
             outed_player_data = data.get("outed_player", {})
             player_id = outed_player_data.get("player_id", striker_id)
@@ -443,7 +448,7 @@ class OverScoreView(LoginRequiredMixin,View):
 
             return JsonResponse({"status": "success", "message": "Wicket updated"})
 
-    # 🔵 Handle over completion event
+    #  Handle over completion event
         elif event == "OVER":
             over_summary = data.get("over_summary", "")
             new_bowler_id = data.get("new_bowler_id")
@@ -462,9 +467,9 @@ class OverScoreView(LoginRequiredMixin,View):
             except Player.DoesNotExist:
                 return JsonResponse({"status": "error", "message": "New bowler not found"}, status=404)
 
-            bowling_team = match.team2  # Or use your match logic if needed
+            bowling_team = match.team2  
 
-            new_over = Over.objects.create(   # ✅ store created over
+            new_over = Over.objects.create(   
          match_no=match,
          bowling_team=bowling_team,
          over_no=over.over_no + 1,
@@ -475,7 +480,7 @@ class OverScoreView(LoginRequiredMixin,View):
          user=request.user
                        )
 
-    # ✅ also store new bowler in session if needed
+    
         request.session["bowler_id"] = new_bowler_id
 
         return JsonResponse({
@@ -489,33 +494,29 @@ class OverScoreView(LoginRequiredMixin,View):
                  })
 
 
-    # 🔴 Fallback (if unknown event)
+    
         
         
 
-#now in undo outed player
-# scoreapp/views.py
-from django.views.generic.edit import FormView
-from django.urls import reverse_lazy
-from django.contrib import messages
-from .forms import ErrorReportForm
-from .servicenow_client import create_error_record
+
+
+
 
 class ErrorReportCreateView(FormView):
     template_name = "error_report.html"
     form_class = ErrorReportForm
-    success_url = reverse_lazy("error_report_sent")  # create a simple success page or redirect back
+    success_url = reverse_lazy("error_report_sent")  
 
     def get_initial(self):
         initial = super().get_initial()
         if self.request.user.is_authenticated:
             initial["user_name"] = self.request.user.username or self.request.user.username
             initial["user_email"] = self.request.user.email or self.request.user.email
-        # page_url will be set by JS but you can set a default here
+        
         return initial
 
     def form_valid(self, form):
-        # Prepare payload matching your ServiceNow fields
+        
         user = self.request.user
         payload = {
             "user_name": user.username if user.is_authenticated else form.cleaned_data.get("user_name") or "Anonymous",
@@ -530,11 +531,10 @@ class ErrorReportCreateView(FormView):
         result = create_error_record(payload)
 
         if result["ok"]:
-            # Optionally get sys_id: result['response']['result']['sys_id']
+            
             messages.success(self.request, "Thanks — your report was sent to our team.")
             return super().form_valid(form)
         else:
             messages.error(self.request, "Failed to send report. We'll retry automatically. (Error logged)")
-            # Optionally log this error server-side (Django logs)
-            # But do not raise — show friendly message to user and still redirect or render
-            return super().form_valid(form)  # you may also choose to return self.form_invalid(form)
+          
+            return super().form_valid(form)

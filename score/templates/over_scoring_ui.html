@@ -8,8 +8,12 @@
     <img src="{% static 'images/bat-icon.jpg' %}" alt="Bat Icon" width="30" class="me-2">
     <span class="fs-4">Gully Cricket</span>
   </a>
+  
+    <span class="nav-item me-2">
+        <a class="btn btn-secondary" href="{% url 'report_error' %}">Report a Problem</a>
+      </span>
   <span class="ms-auto text-white"><b>match_num : </b>{{ match.match_number }}</span>
-</nav>
+    </nav>
 {% endblock %}
 
 {% block content %}
@@ -156,7 +160,7 @@
 
     let overSummary = [];
     let n = 6;
-    let nb = getElementById("nb-runs").value;
+    let nb = document.getElementById("nb-runs").value;
 
     function updateStatsUI() {
         document.getElementById("striker-name").textContent = strikerStats.name;
@@ -182,7 +186,7 @@
         }
     }
 
-    // 🔹 Save ball instantly to Django using fetch
+    //  Save ball instantly to Django using fetch
    function saveBallToServer(event, extraData = {}) {
     fetch("{% url 'update_ball' match.id over.id %}", {
         method: "POST",
@@ -196,7 +200,7 @@
             bowler_id: "{{ bowler.id }}",
             
             event: event,
-            ...extraData // ✅ Merge extra fields like over_summary, new_bowler_id
+            ...extraData 
         })
     })
     .then(response => response.json())
@@ -218,6 +222,7 @@
         `;
 
         tableBody.insertAdjacentHTML("beforeend", newRow);
+         
     }
 })
     .catch(err => console.error("Error:", err));
@@ -301,7 +306,7 @@
         if (runs % 2 !== 0) changeStrike();
 
     } else if (lastAction === "W") {
-        // Undo wicket → open manual player selection popup
+        
         strikerStats.balls--;
         document.getElementById("undo-wicket-popup").style.display = "block";
         return; // wait for confirm
@@ -326,7 +331,7 @@ function confirmUndoWicket() {
 
     strikerStats = {
         name: player_name,
-        runs: 0,   // You may load his old runs/balls from DB if needed
+        runs: 0,   
         balls: 0,
         player_id: player_id
     };
@@ -377,22 +382,10 @@ function submitOverData() {
  
 //over details
 
-if (data.status === "success" && event === "OVER") {
 
-    let tableBody = document.querySelector("table tbody");
-
-    let newRow = `
-        <tr>
-            <td>{{ match.match_number }}</td>
-            <td>${document.getElementById("bowler_name").textContent}</td>
-            <td>${data.over_no}</td>
-            <td>${data.over_summary}</td>
-        </tr>
-    `;
-
-    tableBody.innerHTML += newRow;   // ✅ append row
-}
-
+document.addEventListener("DOMContentLoaded", function () {
+    updateStatsUI();
+});
 </script>
 
 {% endblock %}

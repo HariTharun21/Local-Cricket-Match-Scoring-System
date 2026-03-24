@@ -7,7 +7,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
    path('login/', LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
-    path('register/', views.register, name='register'),  # if you wrote register
+    path('register/', views.register, name='register'), 
     
     # Users request access to a resource
     path('request/match/<int:match_id>/', views.request_access, name='request_match_access'),

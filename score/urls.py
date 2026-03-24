@@ -8,7 +8,7 @@ from django.urls import path
 urlpatterns = [
    
     path('', HomeView.as_view(), name='home'),
-    path('home/', HomeView.as_view(), name='home'),  # explicit home path
+    path('home/', HomeView.as_view(), name='home'),  
     path('players/', PlayerListView.as_view(), name='player_list'),
     path('players/add/', PlayerCreateView.as_view(), name='player_create'),
     path('players/<int:pk>/edit/', PlayerUpdateView.as_view(), name='player_edit'),
@@ -23,7 +23,7 @@ urlpatterns = [
     path('match/<int:match_id>/toss/', TossDecisionView.as_view(), name='toss_decision'),
     path('overs/', OverListView.as_view(), name='over_list'),
 
-    # urls.py
+    
     path("over/create/<int:match_id>/", BasicOverCreationView.as_view(), name="basic_over_create"),
 
   
