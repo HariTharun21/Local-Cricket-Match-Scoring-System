@@ -2,6 +2,15 @@
 
 A web-based application built using Django to track and manage gully cricket matches with real-time ball-by-ball scoring.
 
+<h3>🚧 **Project Status: In Progress**</h3>
+
+This is a Django-based web application for scoring local cricket matches ball-by-ball.
+
+⚠️ Note:
+- This project is still under development
+- Some features may not work fully
+- Improvements and updates are ongoing
+
 <h2>📖 Project Description</h2>
 
 The Local Match Scoring System is a web-based application developed using Django that enables users to efficiently manage and track gully cricket matches in real time. This system is designed to simplify the traditional manual scoring process by providing a digital platform for ball-by-ball score updates, player management, and match history storage.
@@ -38,24 +47,49 @@ Database: Oracle<br>
 Version Control: Git & GitHub
 
 <h2>📂 Project Structure</h2>
+<pre>
+cricket/
+│
+├── access/
+│   ├── templates/
+│   ├── models.py
+│   ├── views.py
+│   └── urls.py
+│
+├── cricket/
+│   ├── models.py
+│   ├── settings.py
+│   ├── views.py
+│   └── urls.py
+│
+├── score/
+│   ├── templates/
+│   ├── forms.py
+│   ├── models.py
+│   ├── views.py
+│   ├── urls.py
+│   ├── servicenow_client.py
+│   └── admin.py
+│   
+└── static/</pre>
 
 <h2>⚙️ Installation & Setup</h2>
+<pre>
 <h3>Clone the repository</h3>
-git clone https://github.com/HariTharun21/Local-Cricket-Match-Scoring-System.git<br>
-
+git clone <a href="https://github.com/HariTharun21/Local-Cricket-Match-Scoring-System.git" target="_blank">repository link</a><br>
 cd cricket
 <h3>Create virtual environment</h3>
-python -m venv venv<br>
+python -m venv venv
 venv\Scripts\activate   # Windows
 <h3>Install dependencies</h3>
 pip install -r requirements.txt
 <h3>Apply migrations</h3>
-python manage.py makemigrations<br>
+python manage.py makemigrations
 python manage.py migrate
 <h3>Run server</h3>
-python manage.py runserver<br>
+python manage.py runserver
 <h3>Open in browser</h3>
-http://127.0.0.1:8000/
+http://127.0.0.1:8000/</pre>
 
 <h2>Project Demo Video</h2>
  🎥<br>
